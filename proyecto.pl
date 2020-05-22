@@ -10,18 +10,26 @@ fncr(F, FNCR ).
 refutable(F).
 */
 
-transImplica( P => Q, ~(P) \/ (Q) ).
-/*
-?- transImplica(a => (b => c), Rdo).
-Rdo = ~a \/ (b => c)
-*/
+
 transEquivalencia( P <=> Q, (~(P)\/(Q)) /\ ((P) \/ ~(Q)) ).
 
 /*RTA no tiene el simbolo de iguales ni el de implicacion
 fncr(F,FNCR):- fBienEscrita(F,RTA),
+*/
 
+/*
 posible solucion, falta implementar las dos sin
 fBienEscrita(F,RTA):-  fSinEquivalencias(F,Rta1), fSinImplicaciones(Rta1,RTA).
 fSinEquivalencias(F,RTA).
 fSinImplicaciones(F,RTA).
+*/
+
+transImplicaciones( P => Q, ~(P1) \/ (Q1) ):- 
+    transImplicaciones(P,P1),
+    transImplicaciones(Q,Q1).
+transImplicaciones(P,P).
+
+/*
+?- transImplicaciones((a => c) => b, R).
+FUNCIONO :) dps lo sigo.
 */
