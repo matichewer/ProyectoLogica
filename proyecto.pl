@@ -17,9 +17,9 @@ Rdo = ~a \/ (b => c)
 */
 transEquivalencia( P <=> Q, (~(P)\/(Q)) /\ ((P) \/ ~(Q)) ).
 
-/*RTA no tiene el simbolo de iguales ni el de implicacion*/
-fncr(F,FNCR):- fBienEscrita(F,RTA), 
-/*
+/*RTA no tiene el simbolo de iguales ni el de implicacion
+fncr(F,FNCR):- fBienEscrita(F,RTA),
+
 posible solucion, falta implementar las dos sin
 fBienEscrita(F,RTA):-  fSinEquivalencias(F,Rta1), fSinImplicaciones(Rta1,RTA).
 fSinEquivalencias(F,RTA).
