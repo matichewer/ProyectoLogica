@@ -10,26 +10,39 @@ fncr(F, FNCR ).
 refutable(F).
 */
 
-
-transEquivalencia( P <=> Q, (~(P)\/(Q)) /\ ((P) \/ ~(Q)) ).
-
-/*RTA no tiene el simbolo de iguales ni el de implicacion
-fncr(F,FNCR):- fBienEscrita(F,RTA),
-*/
-
-/*
-posible solucion, falta implementar las dos sin
-fBienEscrita(F,RTA):-  fSinEquivalencias(F,Rta1), fSinImplicaciones(Rta1,RTA).
-fSinEquivalencias(F,RTA).
-fSinImplicaciones(F,RTA).
-*/
-
 transImplicaciones( P => Q, ~(P1) \/ (Q1) ):- 
     transImplicaciones(P,P1),
     transImplicaciones(Q,Q1).
 transImplicaciones(P,P).
 
+transEquivalencias( P <=> Q, (~(P1)\/(Q1)) /\ ((P1) \/ ~(Q1)) ):-
+    transEquivalencias(P,P1),
+    transEquivalencias(Q,Q1).
+transEquivalencias(P,P).
+
 /*
 ?- transImplicaciones((a => c) => b, R).
-FUNCIONO :) dps lo sigo.
+R = ~(~a\/c)\/b
+?- transEquivalencias((p<=>k) <=> q,R).
+R = (~((~p\/k)/\(p\/~k))\/q)/\((~p\/k)/\(p\/~k)\/~q)
+*/
+
+/*RTA no tiene equivalencias ni impliaciones
+fncr(F,FNCR):- fBienEscrita(F,RTA),
+*/
+fBienEscrita(F,RTA):- 
+    transImplicaciones(F,Rta1),
+    transEquivalencias(Rta1,RTA).	
+/*
+?-fBienEscrita( ( (a => b) <=> c ) , R ).
+(~(a=>b)\/c)/\((a=>b)\/~c)
+ERROR no me resuelve las implicaciones ERROR ????????????????????
+*/
+/*
+fPaso1(F, RTA).
+fPaso1a( ~(~F) , F ).
+fPaso1b( ~((P)\/(Q)) , ~(P)/\~(Q) ).
+fPaso1c( ~((P)/\(Q)) , ~(P)\/~(Q) ).
+fPaso1d( ~(bottom) , top ).
+fPaso1e( ~(top) , bottom ).
 */
