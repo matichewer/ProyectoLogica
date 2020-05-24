@@ -27,22 +27,46 @@ R = ~(~a\/c)\/b
 R = (~((~p\/k)/\(p\/~k))\/q)/\((~p\/k)/\(p\/~k)\/~q)
 */
 
-/*RTA no tiene equivalencias ni impliaciones
-fncr(F,FNCR):- fBienEscrita(F,RTA),
-*/
+/*RTA no tiene equivalencias ni impliaciones*/
 fBienEscrita(F,RTA):- 
     transImplicaciones(F,Rta1),
     transEquivalencias(Rta1,RTA).	
-/*
+ /*
 ?-fBienEscrita( ( (a => b) <=> c ) , R ).
 (~(a=>b)\/c)/\((a=>b)\/~c)
 ERROR no me resuelve las implicaciones ERROR ????????????????????
 */
+
+fPaso1a( ~(~F) , (F1) ):- fPaso1a(F,F1).
+fPaso1a(F,F).
 /*
-fPaso1(F, RTA).
-fPaso1a( ~(~F) , F ).
-fPaso1b( ~((P)\/(Q)) , ~(P)/\~(Q) ).
-fPaso1c( ~((P)/\(Q)) , ~(P)\/~(Q) ).
-fPaso1d( ~(bottom) , top ).
-fPaso1e( ~(top) , bottom ).
+?- fPaso1a(~(~(~(~(~(~a))))), R).
+R=a.
 */
+
+fPaso1b( ~( (P) \/ (Q) ) , ~(P1) /\ ~(Q1) ):-
+    fPaso1b(P,P1),
+    fPaso1b(Q,Q1).
+fPaso1b(F,F).
+/*
+?- fPaso1b(~((~(b \/ c )) \/ (a)),R).
+R = ~(~b/\~c)/\~a
+*/
+
+fPaso1c( ~((P)/\(Q)) , ~(P1) \/ ~(Q1) ):-
+    fPaso1c(P,P1),
+    fPaso1c(Q,Q1).
+fPaso1c(F,F).
+/*
+?- fPaso1c( ~(~(b/\ c) /\ a),R).
+R = ~(~b\/~c)\/~a
+*/
+
+fPaso1d( ~(bottom) , top ).
+fPaso1d(F,F).
+fPaso1e( ~(top) , bottom ).
+fPaso1e(F,F).
+
+
+
+/*fncr(F,FNCR):- fBienEscrita(F,RTA),*/
