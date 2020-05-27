@@ -1,7 +1,7 @@
-:- op(300,fx,~). % negaci´on, prefija, no asociativa.
-:- op(400,yfx,(/\)). % conjunci´on, infija, asociativa a izquierda.
-:- op(500,yfx,(\/)). % disyunci´on, infija, asociativa a izquierda.
-:- op(600,xfx,=>). % implicaci´on, infija, no asociativa.
+:- op(300,fx,~). % negacion, prefija, no asociativa.
+:- op(400,yfx,(/\)). % conjuncion, infija, asociativa a izquierda.
+:- op(500,yfx,(\/)). % disyuncion, infija, asociativa a izquierda.
+:- op(600,xfx,=>). % implicacion, infija, no asociativa.
 :- op(650,xfx,<=>). % equivalencia, infija, no asociativa.
 
 /*
