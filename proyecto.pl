@@ -10,10 +10,22 @@ fncr(F, FNCR ).
 refutable(F).
 */
 
-transImplicaciones( P => Q, ~(P1) \/ (Q1) ):- 
-    transImplicaciones(P,P1),
-    transImplicaciones(Q,Q1).
-transImplicaciones(P,P).
+/* ELIMINO TODAS LAS IMPLICACIONES DE MI FBF */
+
+transformarImplicaciones(P,P):- atomic(P).
+transformarImplicaciones(~P,~(RTA)):-transformarImplicaciones(P,RTA).
+transformarImplicaciones( P => Q, ~(P1) \/ (Q1) ):- 
+    transformarImplicaciones(P,P1),
+    transformarImplicaciones(Q,Q1).
+transformarImplicaciones(P \/ Q, (P1) \/ (Q1) ):-
+    transformarImplicaciones(P,P1),
+    transformarImplicaciones(Q,Q1).
+transformarImplicaciones( P /\ Q, (P1) /\ (Q1) ):-
+    transformarImplicaciones(P,P1),
+    transformarImplicaciones(Q,Q1).
+transformarImplicaciones(P <=> Q, (P1) <=> (Q1) ):-
+    transformarImplicaciones(P,P1),
+    transformarImplicaciones(Q,Q1).
 
 transEquivalencias( P <=> Q, (~(P1)\/(Q1)) /\ ((P1) \/ ~(Q1)) ):-
     transEquivalencias(P,P1),
