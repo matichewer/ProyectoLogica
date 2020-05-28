@@ -4,10 +4,8 @@
 :- op(600,xfx,=>). % implicacion, infija, no asociativa.
 :- op(650,xfx,<=>). % equivalencia, infija, no asociativa.
 
-/*
-teorema(F):- fncr(F,FNCR), refutable(FNCR).
-fncr(F, FNCR ).
-refutable(F).
+/* 
+teorema(F):- fncr(F,FNCR), refutable(FNCR). 
 */
 
 /* ELIMINO TODAS LAS IMPLICACIONES DE MI FBF */
@@ -27,28 +25,28 @@ transformarImplicaciones(P <=> Q, (P1) <=> (Q1) ):-
     transformarImplicaciones(P,P1),
     transformarImplicaciones(Q,Q1).
 
-transEquivalencias( P <=> Q, (~(P1)\/(Q1)) /\ ((P1) \/ ~(Q1)) ):-
-    transEquivalencias(P,P1),
-    transEquivalencias(Q,Q1).
-transEquivalencias(P,P).
+/* ELIMINO TODAS LAS EQUIVALENCIAS DE MI FBF */
 
-/*funciona recursivamente
-?- transImplicaciones((a => c) => b, R).
-R = ~(~a\/c)\/b
-funciona recursivamente
-?- transEquivalencias((p<=>k) <=> q,R).
-R = (~((~p\/k)/\(p\/~k))\/q)/\((~p\/k)/\(p\/~k)\/~q)
-*/
+transformarEquivalencias(P,P):- atomic(P).
+transformarEquivalencias(~P,~(RTA)):- transformarEquivalencias(P,RTA). 
+transformarEquivalencias( P <=> Q, (~(P1)\/(Q1)) /\ ((P1) \/ ~(Q1)) ):-
+    transformarEquivalencias(P,P1),
+    transformarEquivalencias(Q,Q1).
+transformarEquivalencias(P \/ Q, (P1) \/ (Q1) ):-
+    transformarEquivalencias(P,P1),
+    transformarEquivalencias(Q,Q1).
+transformarEquivalencias( P /\ Q, (P1) /\ (Q1) ):-
+    transformarEquivalencias(P,P1),
+    transformarEquivalencias(Q,Q1).
+transformarEquivalencias(P => Q, (P1) => (Q1)):-
+    transformarEquivalencias(P,P1),
+    transformarEquivalencias(Q,Q1).
 
-/*RTA no tiene equivalencias ni impliaciones*/
+/* ELIMINO LAS IMPLICACIONES Y EQUIVALENCIAS DE MI FBF */
+
 fBienEscrita(F,RTA):- 
-    transImplicaciones(F,Rta1),
-    transEquivalencias(Rta1,RTA).	
- /*
-?-fBienEscrita( ( (a => b) <=> c ) , R ).
-(~(a=>b)\/c)/\((a=>b)\/~c)
-ERROR no me resuelve las implicaciones ERROR ????????????????????
-*/
+    transformarImplicaciones(F,Rta1),
+    transformarEquivalencias(Rta1,RTA).	
 
 fPaso1a( ~(~F) , (F1) ):- fPaso1a(F,F1).
 fPaso1a(F,F).
