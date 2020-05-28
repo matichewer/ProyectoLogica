@@ -48,48 +48,28 @@ fBienEscrita(F,RTA):-
     transformarImplicaciones(F,Rta1),
     transformarEquivalencias(Rta1,RTA).	
 
-fPaso1a( ~(~F) , (F1) ):- fPaso1a(F,F1).
-fPaso1a(F,F).
-/*funciona recursivamente
-?- fPaso1a(~(~(~(~(~(~a))))), R).
-R=a.
-*/
+/*-------------------TRANSFORMAR A FNC--------------------------------*/
 
-fPaso1b( ~( (P) \/ (Q) ) , ~(P1) /\ ~(Q1) ):-
-    fPaso1b(P,P1),
-    fPaso1b(Q,Q1).
-fPaso1b(F,F).
-/*funciona recursivamente
-?- fPaso1b(~((~(b \/ c )) \/ (a)),R).
-R = ~(~b/\~c)/\~a
-*/
+/* PRIMER PASO PARA TRANSFORMAR A FNC */
 
-fPaso1c( ~((P)/\(Q)) , ~(P1) \/ ~(Q1) ):-
-    fPaso1c(P,P1),
-    fPaso1c(Q,Q1).
-fPaso1c(F,F).
-/*funciona recursivamente
-?- fPaso1c( ~(~(b/\ c) /\ a),R).
-R = ~(~b\/~c)\/~a
-*/
-
-fPaso1d( ~(bottom) , top ).
-fPaso1d(F,F).
-fPaso1e( ~(top) , bottom ).
-fPaso1e(F,F).
-
-/*RTA me devuelve a F luego de aplicarle los pasos a,b,c,d,e*/
-fPasoUno(F,RTA):- 
-    fPaso1a(F, Rta1),
-    fPaso1b(Rta1, Rta2),
-    fPaso1c(Rta2,Rta3),
-    fPaso1d(Rta3,Rta4),
-    fPaso1e(Rta4,RTA).
-/*
-?- fPasoUno(~(~(~a) \/ b), R).
-R = ~(~(~a))/\~b 
-ERROR NO ME RESUELVE LA NEGACION !!!!!!!!!!!!!!!!!
-*/
+fPaso1(P,P):- atomic(P).
+fPaso1( ~P, ~P):- atomic(P).
+fPaso1(~top, bottom).
+fPaso1(~bottom, top).
+fPaso1( ~(~P) , (P1) ):- fPaso1(P,P1).
+fPaso1( ~(~P) , (P) ):- atomic(P).
+fPaso1(~(P \/ Q), (P1) /\ (Q1) ):-
+    fPaso1(~P,P1),
+    fPaso1(~Q,Q1).
+fPaso1(~(P /\ Q), (P1) \/ (Q1) ):-
+    fPaso1(~P,P1),
+    fPaso1(~Q,Q1).
+fPaso1(P \/ Q, (P1) \/ (Q1) ):-
+    fPaso1(P, P1),
+    fPaso1(Q,Q1).
+fPaso1(P /\ Q, (P1) /\ (Q1) ):-
+    fPaso1(P,P1),
+    fPaso1(Q,Q1).
 
 fPaso2a( (P1) \/ ( P2 /\ P3 ), ( ((P11) \/ (P22)) /\ ((P11) \/ (P33)) ) ):-
     fPaso2a(P1,P11),
