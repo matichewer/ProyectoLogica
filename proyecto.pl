@@ -48,9 +48,9 @@ fBienEscrita(F,RTA):-
     transformarImplicaciones(F,Rta1),
     transformarEquivalencias(Rta1,RTA).	
 
-/*-------------------TRANSFORMAR A FNC--------------------------------*/
+/*-------------------TRANSFORMAR A FNCR--------------------------------*/
 
-/* PRIMER PASO PARA TRANSFORMAR A FNC */
+/* PRIMER PASO PARA TRANSFORMAR A FNCR */
 
 fPaso1(P,P):- atomic(P).
 fPaso1( ~P, ~P):- atomic(P).
@@ -70,35 +70,26 @@ fPaso1(P \/ Q, (P1) \/ (Q1) ):-
 fPaso1(P /\ Q, (P1) /\ (Q1) ):-
     fPaso1(P,P1),
     fPaso1(Q,Q1).
+    
+/* SEGUNDO PASO PARA TRANSFORMAR A FNCR */
 
-fPaso2a( (P1) \/ ( P2 /\ P3 ), ( ((P11) \/ (P22)) /\ ((P11) \/ (P33)) ) ):-
-    fPaso2a(P1,P11),
-    fPaso2a(P2,P22),
-    fPaso2a(P3,P33).
+fPaso2(P,P):- atomic(P).
+fPaso2(~P,~P):- atomic(P).
+
+
+
+fPaso2( (P1) \/ ( P2 /\ P3 ), ( ((P11) \/ (P22)) /\ ((P11) \/ (P33)) ) ):-
+    fPaso2(P1,P11),
+    fPaso2(P2,P22),
+    fPaso2(P3,P33).
 fPaso2a(P,P).
-/* funciona recursivamente
-?- fPaso2a( (a \/ (b /\ c) \/ (d /\ e) )  , R).
-R = ((a\/b)/\(a\/c)\/d)/\((a\/b)/\(a\/c)\/e)
-*/
 
-/* MAL SE HACE CON LISTA SEGUN EL PROFE EN EL FORO
- * PARA NO CAER EN UN BUCLE
-fPaso2b( (P1) \/ (P2) , ( (P2) \/ (P1) ) ).
-fPaso2bb( (P1) /\ (P2) , ( (P2) /\ (P1) ) ).
-*/
-/*
-fPaso2c(_P \/ top, _P ).
-fPaso2c(P,P).
-fPaso2d(_P \/ bottom, _P).
-fPaso2d(P,P).*/
+fPaso2(_P \/ top, top ).
+fPaso2(top \/ _P, top ).
+fPaso2(P \/ bottom, P).
+fPaso2(bottom \/ P, P).
 
-/*RTA me devuelve a F luego de aplicarle los pasos a,b,c y d
-fPasoDos(F, RTA):-
-    fPaso2a(F,Rta1),
-    fPaso2b(Rta1,Rta2),
-    fPaso2c(Rta2,Rta3),
-    fPaso2d(Rta3,RTA).
-*/
+/* TERCER PASO PARA TRANSFORMAR A FNCR */
 
 fPaso3a(P /\ top, P1):-fPaso3a(P,P1).
 fPaso3a(P,P).
