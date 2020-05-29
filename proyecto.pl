@@ -75,32 +75,30 @@ fPaso1(P /\ Q, (P1) /\ (Q1) ):-
 
 fPaso2(P,P):- atomic(P).
 fPaso2(~P,~P):- atomic(P).
-
 fPaso2( P1 \/ (P2 /\ P3), (P01) /\ (P02) ):-
     fPaso2(P1 \/ P2,P01),
     fPaso2(P1 \/ P3,P02).
 fPaso2( (P1 /\ P2) \/ P3, (P01) /\ (P02) ):-
     fPaso2(P1 \/ P3, P01),
     fPaso2(P2 \/ P3, P02).
-fPaso2( (P1 /\ P2) \/ (P3 /\ P4), (P01) /\ (P02) ):-
-    fPaso2( (P1 /\ P2) \/ P3, P01),
-    fPaso2( (P1 /\ P2) \/ P4, P02).
 fPaso2( P1 /\ P2, (P01) /\ (P02)):-
     fPaso2(P1,P01),
     fPaso2(P2,P02).
 fPaso2( P1 \/ P2, (P01) \/ (P02)):-
     fPaso2(P1,P01),
     fPaso2(P2,P02).
-
 fPaso2(_P \/ top, top ).
 fPaso2(top \/ _P, top ).
 fPaso2(P \/ bottom, P).
 fPaso2(bottom \/ P, P).
 
-/*
- ¿¿¿¿COMO CUBRO TODOS LOS CASOS?? ESTO SERIA EL PASO2 DE LAS
- DIAPOSITIVAS???? EL PASO 2 ES TRATAR LAS CONJUNCIONES? Y LAS DIYUNCIONES??¿¿¿
-*/
+fPaso2Iterado(F, Rdo):-
+	fPaso2(F, F2),
+	F \= F2,
+	fPaso2Iterado(F2, Rdo).
+fPaso2Iterado(F, F):-
+	fPaso2(F, F2),
+	F = F2.
 
 /* TERCER PASO PARA TRANSFORMAR A FNCR */
 
@@ -110,7 +108,7 @@ fPaso3(~P,~P):- atomic(P).
 fPaso3(bottom,bottom).
 fPaso3( _ /\ bottom, bottom).
 fPaso3(bottom /\ _ , bottom).
-/*fPaso3(P /\ Q, ):-
+/*fPaso3(P /\ Q, P1 /\ Q1 ):-
     fPaso3(P,P1),
     fPaso3(Q,Q1).
     
