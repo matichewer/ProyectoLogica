@@ -76,36 +76,57 @@ fPaso1(P /\ Q, (P1) /\ (Q1) ):-
 fPaso2(P,P):- atomic(P).
 fPaso2(~P,~P):- atomic(P).
 
-
-
-fPaso2( (P1) \/ ( P2 /\ P3 ), ( ((P11) \/ (P22)) /\ ((P11) \/ (P33)) ) ):-
-    fPaso2(P1,P11),
-    fPaso2(P2,P22),
-    fPaso2(P3,P33).
-fPaso2a(P,P).
+fPaso2( P1 \/ (P2 /\ P3), (P01) /\ (P02) ):-
+    fPaso2(P1 \/ P2,P01),
+    fPaso2(P1 \/ P3,P02).
+fPaso2( (P1 /\ P2) \/ P3, (P01) /\ (P02) ):-
+    fPaso2(P1 \/ P3, P01),
+    fPaso2(P2 \/ P3, P02).
+fPaso2( (P1 /\ P2) \/ (P3 /\ P4), (P01) /\ (P02) ):-
+    fPaso2( (P1 /\ P2) \/ P3, P01),
+    fPaso2( (P1 /\ P2) \/ P4, P02).
+fPaso2( P1 /\ P2, (P01) /\ (P02)):-
+    fPaso2(P1,P01),
+    fPaso2(P2,P02).
+fPaso2( P1 \/ P2, (P01) \/ (P02)):-
+    fPaso2(P1,P01),
+    fPaso2(P2,P02).
 
 fPaso2(_P \/ top, top ).
 fPaso2(top \/ _P, top ).
 fPaso2(P \/ bottom, P).
 fPaso2(bottom \/ P, P).
 
+/*
+ ¿¿¿¿COMO CUBRO TODOS LOS CASOS?? ESTO SERIA EL PASO2 DE LAS
+ DIAPOSITIVAS???? EL PASO 2 ES TRATAR LAS CONJUNCIONES? Y LAS DIYUNCIONES??¿¿¿
+*/
+
 /* TERCER PASO PARA TRANSFORMAR A FNCR */
 
+fPaso3(P,P):-atomic(P).
+fPaso3(~P,~P):- atomic(P).
+/*bottom*/
+fPaso3(bottom,bottom).
+fPaso3( _ /\ bottom, bottom).
+fPaso3(bottom /\ _ , bottom).
+/*fPaso3(P /\ Q, ):-
+    fPaso3(P,P1),
+    fPaso3(Q,Q1).
+    
+    ¿¿¿COMO RESUELVO ESTE CASO??
+*/
+/*top*/
+fPaso3(top,top). /*ESTA ES NECESARIA??*/
+fPaso3(top /\ P, P1):- fPaso3(P,P1).
 fPaso3a(P /\ top, P1):-fPaso3a(P,P1).
-fPaso3a(P,P).
 /* funciona recursivamente
 fPaso3a( (a /\ top) /\ top, R).
 R = a
+fPaso3(a /\ b /\ top,R).
+R = FALSE     ¿¿¿??? TENGO QUE DIFINIR ANTES QUE COSA??¿¿¿
 */
 
-fPaso3b( _ /\ bottom, bottom).
-fPaso3b(P,P).
-/* funciona creeeo
-fPaso3b( (a /\ top) /\ bottom , R).
-R = bottom
+/*
+ * COMO TRANSFORMO A FNCR CON LOS PASOS 1, 2 Y 3 ??¿¿¿
 */
-
-/*RTA me devuelve a F luego de aplicarle los pasos a y b*/
-fPasoTres(P,RTA):-
-    fPaso3a(P,Rta1),
-    fPaso3b(Rta1,RTA).
