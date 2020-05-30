@@ -8,6 +8,7 @@
 teorema(F):- fncr(F,FNCR), refutable(FNCR). 
 */
 
+
 /* ELIMINO TODAS LAS IMPLICACIONES DE MI FBF */
 
 transformarImplicaciones(P,P):- atomic(P).
@@ -24,6 +25,7 @@ transformarImplicaciones( P /\ Q, (P1) /\ (Q1) ):-
 transformarImplicaciones(P <=> Q, (P1) <=> (Q1) ):-
     transformarImplicaciones(P,P1),
     transformarImplicaciones(Q,Q1).
+
 
 /* ELIMINO TODAS LAS EQUIVALENCIAS DE MI FBF */
 
@@ -42,11 +44,13 @@ transformarEquivalencias(P => Q, (P1) => (Q1)):-
     transformarEquivalencias(P,P1),
     transformarEquivalencias(Q,Q1).
 
+
 /* ELIMINO LAS IMPLICACIONES Y EQUIVALENCIAS DE MI FBF */
 
 fBienEscrita(F,RTA):- 
     transformarImplicaciones(F,Rta1),
     transformarEquivalencias(Rta1,RTA).	
+
 
 /*-------------------TRANSFORMAR A FNCR--------------------------------*/
 
@@ -71,6 +75,7 @@ fPaso1(P /\ Q, (P1) /\ (Q1) ):-
     fPaso1(P,P1),
     fPaso1(Q,Q1).
     
+
 /* SEGUNDO PASO PARA TRANSFORMAR A FNCR */
 
 fPaso2(P,P):- atomic(P).
@@ -92,6 +97,7 @@ fPaso2(top \/ _P, top ).
 fPaso2(P \/ bottom, P).
 fPaso2(bottom \/ P, P).
 
+/* Cascara para el fPaso2 */
 fPaso2Iterado(F, Rdo):-
 	fPaso2(F, F2),
 	F \= F2,
@@ -99,6 +105,7 @@ fPaso2Iterado(F, Rdo):-
 fPaso2Iterado(F, F):-
 	fPaso2(F, F2),
 	F = F2.
+
 
 /* TERCER PASO PARA TRANSFORMAR A FNCR */
 
@@ -125,6 +132,3 @@ fPaso3(a /\ b /\ top,R).
 R = FALSE     ¿¿¿??? TENGO QUE DIFINIR ANTES QUE COSA??¿¿¿
 */
 
-/*
- * COMO TRANSFORMO A FNCR CON LOS PASOS 1, 2 Y 3 ??¿¿¿
-*/
