@@ -105,8 +105,7 @@ fPaso2Iterado(F, Rdo):-
 fPaso2Iterado(F, F):-
 	fPaso2(F, F2),
 	F = F2.
-
-
+	
 /* TERCER PASO PARA TRANSFORMAR A FNCR */
 
 fPaso3(P,P):-atomic(P).
@@ -115,20 +114,10 @@ fPaso3(~P,~P):- atomic(P).
 fPaso3(bottom,bottom).
 fPaso3( _ /\ bottom, bottom).
 fPaso3(bottom /\ _ , bottom).
-/*fPaso3(P /\ Q, P1 /\ Q1 ):-
+fPaso3(P /\ Q, P1 /\ Q1 ):-
     fPaso3(P,P1),
     fPaso3(Q,Q1).
-    
-    ¿¿¿COMO RESUELVO ESTE CASO??
-*/
 /*top*/
-fPaso3(top,top). /*ESTA ES NECESARIA??*/
+fPaso3(top,top). 
 fPaso3(top /\ P, P1):- fPaso3(P,P1).
 fPaso3a(P /\ top, P1):-fPaso3a(P,P1).
-/* funciona recursivamente
-fPaso3a( (a /\ top) /\ top, R).
-R = a
-fPaso3(a /\ b /\ top,R).
-R = FALSE     ¿¿¿??? TENGO QUE DIFINIR ANTES QUE COSA??¿¿¿
-*/
-
