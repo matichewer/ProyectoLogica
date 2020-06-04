@@ -13,11 +13,11 @@ teorema(F):- fncr(F,FNCR), refutable(FNCR).
 
 transformarImplicaciones(P,P):- atomic(P).
 transformarImplicaciones(~P,~(RTA)):-transformarImplicaciones(P,RTA).
-transformarImplicaciones( P => Q, ~(P1) \/ (Q1) ):- 
-    transformarImplicaciones(P,P1),
-    transformarImplicaciones(Q,Q1).
 transformarImplicaciones(P \/ Q, (P1) \/ (Q1) ):-
     transformarImplicaciones(P,P1),
+    transformarImplicaciones(Q,Q1).
+transformarImplicaciones( P => Q, P1 \/ Q1 ):- 
+    transformarImplicaciones((~P),P1),
     transformarImplicaciones(Q,Q1).
 transformarImplicaciones( P /\ Q, (P1) /\ (Q1) ):-
     transformarImplicaciones(P,P1),
@@ -31,7 +31,7 @@ transformarImplicaciones(P <=> Q, (P1) <=> (Q1) ):-
 
 transformarEquivalencias(P,P):- atomic(P).
 transformarEquivalencias(~P,~(RTA)):- transformarEquivalencias(P,RTA). 
-transformarEquivalencias( P <=> Q, (~(P1)\/(Q1)) /\ ((P1) \/ ~(Q1)) ):-
+transformarEquivalencias( P <=> Q, (~(P1)\/(Q1)) /\ (~(Q1) \/ (P1)) ):-
     transformarEquivalencias(P,P1),
     transformarEquivalencias(Q,Q1).
 transformarEquivalencias(P \/ Q, (P1) \/ (Q1) ):-
@@ -43,7 +43,6 @@ transformarEquivalencias( P /\ Q, (P1) /\ (Q1) ):-
 transformarEquivalencias(P => Q, (P1) => (Q1)):-
     transformarEquivalencias(P,P1),
     transformarEquivalencias(Q,Q1).
-
 
 /* ELIMINO LAS IMPLICACIONES Y EQUIVALENCIAS DE MI FBF */
 
@@ -60,8 +59,8 @@ fPaso1(P,P):- atomic(P).
 fPaso1( ~P, ~P):- atomic(P).
 fPaso1(~top, bottom).
 fPaso1(~bottom, top).
-fPaso1( ~(~P) , (P1) ):- fPaso1(P,P1).
-fPaso1( ~(~P) , (P) ):- atomic(P).
+fPaso1( ~(~P) , P1 ):- fPaso1(P,P1).
+fPaso1( ~(~P) , P ):- atomic(P).
 fPaso1(~(P \/ Q), (P1) /\ (Q1) ):-
     fPaso1(~P,P1),
     fPaso1(~Q,Q1).
