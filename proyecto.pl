@@ -120,3 +120,19 @@ fPaso3(P /\ Q, P1 /\ Q1 ):-
 fPaso3(top,top). 
 fPaso3(top /\ P, P1):- fPaso3(P,P1).
 fPaso3a(P /\ top, P1):-fPaso3a(P,P1).
+
+/*-------------------TRABAJAMOS CON LISTAS-----------------------------*/
+
+/*-------------------PROGRAMA PRINCIPAL--------------------------------*/
+
+fncr(FBF,FNC):-
+    fBienEscrita(FBF,R1),
+    writeln("Fbf sin implicaciones ni equivalencias"= R1),
+    fPaso1(R1,R2),
+    writeln("Fbf con despuesd del paso1"= R2),
+    fPaso2Iterado(R2,FNC),
+    writeln("Fbf despues del paso2 "= FNC).
+	/*
+    fPaso3(FNC,R3),
+    writeln("Fbf despues del paso3 "= R3).
+    */
