@@ -8,7 +8,6 @@
 teorema(F):- fncr(F,FNCR), refutable(FNCR). 
 */
 
-
 /* ELIMINO TODAS LAS IMPLICACIONES DE MI FBF */
 
 transformarImplicaciones(P,P):- atomic(P).
@@ -121,6 +120,13 @@ fPaso3(top,top).
 fPaso3(top /\ P, P1):- fPaso3(P,P1).
 fPaso3a(P /\ top, P1):-fPaso3a(P,P1).
 
+/* CUARTO PASO PARA TRANSFORMAR A FNCR */
+
+borrarRepetidos(P \/ P, P).
+borrarRepetidos(~P \/ ~P, ~P).
+borrarRepetidos(P \/ ~P, bottom).
+
+/*----------------------------------------------------*/
 
 eliminarParentesis(A, A) :- atom(A).
 eliminarParentesis(~A, ~A) :- atom(A).
@@ -147,7 +153,54 @@ eliminarParentesis(A /\ B, Ra /\ Rb) :-
 
 /*-------------------TRABAJAMOS CON LISTAS-----------------------------*/
 
+/* guardar una expresion en una lista */
+guardarExpresion(A,[[A]]):-atomic(A).
+guardarExpresion(~A,[[~A]]):-atomic(A).
+guardarExpresion(A /\ B,L):-
+    guardarExpresion(A,L1),
+    guardarExpresion(B,L2),
+    unirListas(L1,L2,L).
+guardarExpresion(A \/ B,[L]):-
+    guardarClausula(A\/B,L).
+
+/*guardar una clausula*/
+/* Caso general donde se separa los \/ */
+guardarClausula(A \/ B, L):-
+    guardarClausula(A,L1),
+    guardarClausula(B,L2),
+    append(L1,L2,L).
+
+/* Caso base donde no hay mas \/ */
+guardarClausula(A,[A]).
+
+/* unir listas */
+/* Casos Base donde o bien Ly es vacia o bien Lx es vacia. */
+unirListas(Lx,[[]],Lx).
+unirListas([[]],Ly,Ly).
+unirListas(Lx,[],Lx).
+unirListas([],Ly,Ly).
+
+/* Casos Base donde ya sea la primera lista o la segunda contienen un solo elemento (una sola sublista) */
+unirListas([Lx],Ly,Ls):-
+    Lx\=[],
+    Ls=[Lx|Ly];
+    Ls=Ly.
+unirListas(Lx,[Ly],Ls):-
+    Ly\=[],
+    Ls=[Ly|Lx];
+    Ls=Lx.
+/* Caso general */
+unirListas([X|Lx],Ly,Ls):-
+    unirListas(Lx,Ly,L1),
+    Ls=[X|L1].
+
+unir(Lx,[],Lx).
+unir([],Ly,Ly).
+unir([X|Lx],L2,[X|Lrta]):-
+    unir(Lx,L2,Lrta).
+    
 /*-------------------PROGRAMA PRINCIPAL--------------------------------*/
+
 
 fncr(FBF,RTA):-
     fBienEscrita(FBF,R1),
