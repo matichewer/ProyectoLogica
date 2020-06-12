@@ -206,11 +206,11 @@ fncr(FBF,RTA):-
     fBienEscrita(FBF,R1),
     writeln("Fbf sin implicaciones ni equivalencias"= R1),
     fPaso1(R1,R2),
-    writeln("Fbf con despuesd del paso1"= R2),
+    writeln("Fbf despues del paso 1"= R2),
     fPaso2Iterado(R2,FNC),
-    writeln("Fbf despues del paso2 "= FNC),
+    writeln("Fbf despues del paso 2 "= FNC),
     eliminarParentesis(FNC,RTA),
-    writeln("Fbf parentesis bien "= FNC).    
+    writeln("Fbf sin parentesis de mas "= FNC).    
 	/*
     fPaso3(FNC,R3),
     writeln("Fbf despues del paso3 "= R3).
