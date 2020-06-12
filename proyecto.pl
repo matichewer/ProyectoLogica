@@ -121,17 +121,43 @@ fPaso3(top,top).
 fPaso3(top /\ P, P1):- fPaso3(P,P1).
 fPaso3a(P /\ top, P1):-fPaso3a(P,P1).
 
+
+eliminarParentesis(A, A) :- atom(A).
+eliminarParentesis(~A, ~A) :- atom(A).
+eliminarParentesis(A \/ D, Re) :- 
+    D = B \/ C, 
+    eliminarParentesis(A, Ra), 
+    eliminarParentesis(B, Rb), 
+    eliminarParentesis(C, Rc), 
+    eliminarParentesis(Ra \/ Rb, Rd), 
+    eliminarParentesis(Rd \/ Rc, Re).
+eliminarParentesis(A \/ B, Ra \/ Rb) :- 
+    eliminarParentesis(A, Ra), 
+    eliminarParentesis(B, Rb).
+eliminarParentesis(A /\ D, Re) :- 
+    D = B /\ C, 
+    eliminarParentesis(A, Ra), 
+    eliminarParentesis(B, Rb), 
+    eliminarParentesis(C, Rc), 
+    eliminarParentesis(Ra /\ Rb, Rd), 
+    eliminarParentesis(Rd /\ Rc, Re).
+eliminarParentesis(A /\ B, Ra /\ Rb) :- 
+    eliminarParentesis(A, Ra), 
+    eliminarParentesis(B, Rb). 
+
 /*-------------------TRABAJAMOS CON LISTAS-----------------------------*/
 
 /*-------------------PROGRAMA PRINCIPAL--------------------------------*/
 
-fncr(FBF,FNC):-
+fncr(FBF,RTA):-
     fBienEscrita(FBF,R1),
     writeln("Fbf sin implicaciones ni equivalencias"= R1),
     fPaso1(R1,R2),
     writeln("Fbf con despuesd del paso1"= R2),
     fPaso2Iterado(R2,FNC),
-    writeln("Fbf despues del paso2 "= FNC).
+    writeln("Fbf despues del paso2 "= FNC),
+    eliminarParentesis(FNC,RTA),
+    writeln("Fbf parentesis bien "= FNC).    
 	/*
     fPaso3(FNC,R3),
     writeln("Fbf despues del paso3 "= R3).
