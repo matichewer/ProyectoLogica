@@ -210,7 +210,7 @@ fncr(FBF,RTA):-
     fPaso2Iterado(R2,FNC),
     writeln("Fbf despues del paso 2 "= FNC),
     eliminarParentesis(FNC,RTA),
-    writeln("Fbf sin parentesis de mas "= FNC).    
+    writeln("Fbf sin parentesis de mas "= RTA).    
 	/*
     fPaso3(FNC,R3),
     writeln("Fbf despues del paso3 "= R3).
