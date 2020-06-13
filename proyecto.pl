@@ -159,7 +159,7 @@ guardarExpresion(~A,[[~A]]):-atomic(A).
 guardarExpresion(A /\ B,L):-
     guardarExpresion(A,L1),
     guardarExpresion(B,L2),
-    unirListas(L1,L2,L).
+    unir(L1,L2,L).
 guardarExpresion(A \/ B,[L]):-
     guardarClausula(A\/B,L).
 
@@ -173,29 +173,11 @@ guardarClausula(A \/ B, L):-
 /* Caso base donde no hay mas \/ */
 guardarClausula(A,[A]).
 
-/* unir listas */
-/* Casos Base donde o bien Ly es vacia o bien Lx es vacia. */
-unirListas(Lx,[[]],Lx).
-unirListas([[]],Ly,Ly).
-unirListas(Lx,[],Lx).
-unirListas([],Ly,Ly).
-
-/* Casos Base donde ya sea la primera lista o la segunda contienen un solo elemento (una sola sublista) */
-unirListas([Lx],Ly,Ls):-
-    Lx\=[],
-    Ls=[Lx|Ly];
-    Ls=Ly.
-unirListas(Lx,[Ly],Ls):-
-    Ly\=[],
-    Ls=[Ly|Lx];
-    Ls=Lx.
-/* Caso general */
-unirListas([X|Lx],Ly,Ls):-
-    unirListas(Lx,Ly,L1),
-    Ls=[X|L1].
-
+/* unir dos listas */
+/* caso base*/
 unir(Lx,[],Lx).
 unir([],Ly,Ly).
+/* caso recursivo*/
 unir([X|Lx],L2,[X|Lrta]):-
     unir(Lx,L2,Lrta).
     
