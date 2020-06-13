@@ -196,6 +196,41 @@ reducirClausula([],[]).
 reducirClausula([X|Lx],[X|Lrta]):-
     borrarTodas(X,Lx,Lrto),
     reducirClausula(Lrto,Lrta).
+
+/* ENCONTRAR COMPLEMENTARIOS */
+
+esta(X, [X | _]).
+esta(X, [_ | T]) :- esta(X, T).
+
+/* EXISTE COMPLEMENTARIO */
+/* devuelve true si existe el complementario del elemento
+   X en la lista, false en caso contrario */
+existeComplementario(X,Lista):- atomic(X), esta(~X,Lista).
+existeComplementario(~X,Lista):- atom(X), esta(X,Lista).
+
+/* TIENE COMPLEMENTARIO */
+/* devuelve true si algun elemento de la clausula tiene
+   complementario */
+tieneComplementario([]) :- false.
+tieneComplementario([X|Xs]):- 
+    existeComplementario(X,Xs).
+tieneComplementario([X|Xs]):-
+    not(existeComplementario(X,Xs)),
+    tieneComplementario(Xs).
+
+/* GENERAR TOPS*/
+/* caso base */
+generarTops([Lx],Rta):-
+    tieneComplementario(Lx),
+    Rta=[top];
+    Rta=[Lx].
+/* caso general */
+generarTops([X| Lx],Ls):-
+    generarTops(Lx,Lz),
+    tieneComplementario(X),
+    Ls=[top | Lz];
+    generarTops(Lx,Lz),
+    Ls=[X | Lz].
     
 /*-------------------PROGRAMA PRINCIPAL--------------------------------*/
 
@@ -212,7 +247,9 @@ fncr(FBF,RTA):-
 	guardarExpresion(RTA,RTA1),
     writeln("Fbf guardada en la lista "= RTA1),
     eliminarRepetidos(RTA1,RTA2),
-    writeln("Fbf guardada en la lista sin repeticiones "= RTA2).
+    writeln("Fbf guardada en la lista sin repeticiones "= RTA2),
+    generarTops(RTA2,RTA3),
+    writeln("Fbf guardada en la lista luego de generar tops "= RTA3).    
 	/*
     fPaso3(FNC,R3),
     writeln("Fbf despues del paso3 "= R3).
