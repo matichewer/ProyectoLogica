@@ -46,12 +46,13 @@ fBienEscrita(F,RTA):-
 
 /* PRIMER PASO PARA TRANSFORMAR A FNCR */
 
-fPaso1(P,P):- atomic(P).
-fPaso1( ~P, ~P):- atomic(P).
 fPaso1(~top, bottom).
 fPaso1(~bottom, top).
+fPaso1(P,P):- atomic(P).
+fPaso1( ~P, ~P):- atomic(P).
 fPaso1( ~(~P) , P1 ):- fPaso1(P,P1).
 fPaso1( ~(~P) , P ):- atomic(P).
+
 fPaso1(~(P \/ Q), (P1) /\ (Q1) ):-
     fPaso1(~P,P1),
     fPaso1(~Q,Q1).
@@ -231,15 +232,28 @@ generarTops([X| Lx],Ls):-
     Ls=[top | Lz];
     generarTops(Lx,Lz),
     Ls=[X | Lz].
-    
+
+/* ELIMINAR CLAUSULAS TOP */
+/* casos base */
+eliminarTops([],[]).
+/* caso general */
+eliminarTops([X|Lx],Rta):-  
+    X==top,
+    eliminarTops(Lx,Lxx),
+    Rta=Lxx;
+    eliminarTops(Lx,Lxx),
+    Rta=[X|Lxx].
+
+
+
 /*-------------------PROGRAMA PRINCIPAL--------------------------------*/
 
 
-fncr(FBF,RTA):-
+fncr(FBF,RTA4):-
     fBienEscrita(FBF,R1),
     writeln("Fbf sin implicaciones ni equivalencias"= R1),
     fPaso1(R1,R2),
-    writeln("Fbf despues del paso 1"= R2),
+    writeln("Fbf con negaciones acomodadas,Paso1"= R2),
     fPaso2Iterado(R2,FNC),
     writeln("Fbf despues del paso 2 "= FNC),
     eliminarParentesis(FNC,RTA),
@@ -249,7 +263,9 @@ fncr(FBF,RTA):-
     eliminarRepetidos(RTA1,RTA2),
     writeln("Fbf guardada en la lista sin repeticiones "= RTA2),
     generarTops(RTA2,RTA3),
-    writeln("Fbf guardada en la lista luego de generar tops "= RTA3).    
+    writeln("Fbf guardada en la lista luego de generar tops "= RTA3),
+    eliminarTops(RTA3,RTA4),
+    writeln("Fbf guardada en la lista luego de borrar tops "= RTA4).    
 	/*
     fPaso3(FNC,R3),
     writeln("Fbf despues del paso3 "= R3).
