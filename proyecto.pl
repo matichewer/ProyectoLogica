@@ -307,17 +307,21 @@ pasarClausula([X|Xs],Rta):-
 pasarAfbf([],_).
 pasarAfbf([top],top).
 pasarAfbf([bottom],bottom).
-pasarAfbf([X],X).
+pasarAfbf([X],Rta):- pasarClausula(X,Rta).
 pasarAfbf([X|Xs],Rta):-
     pasarClausula(X,Rta1),
     pasarAfbf(Xs,Rta2),
     Rta=Rta1/\Rta2.
 
+transformarExpresion(A,Rta):- 
+    pasarAfbf(A,Rta1),
+    eliminarParentesis(Rta1,Rta). 
+
 
 /*-------------------PROGRAMA PRINCIPAL--------------------------------*/
 
 
-fncr(FBF,RTA4):-
+fncr(FBF,FNCR):-
     fBienEscrita(FBF,R1),
     writeln("Fbf sin implicaciones ni equivalencias"= R1),
     fPaso1(R1,R2),
@@ -337,8 +341,8 @@ fncr(FBF,RTA4):-
 	generarBottoms(RTA4,RTA5),
 	writeln("Fbf guardada en la lista luego de generar bottoms "= RTA5),
     eliminarBottoms(RTA5,RTA6),
-    writeln("Fbf guardada en la lista luego de borrar bottoms "= RTA6).
-    
+    writeln("Fbf guardada en la lista luego de borrar bottoms "= RTA6),
+    transformarExpresion(RTA6,FNCR).    
 	/*
     fPaso3(FNC,R3),
     writeln("Fbf despues del paso3 "= R3).
