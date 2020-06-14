@@ -244,11 +244,24 @@ eliminarTops([X|Lx],Rta):-
     eliminarTops(Lx,Lxx),
     Rta=[X|Lxx].
 
+/*Obtener primer elemento de una lista */
+primerElemento([],[]).
+primerElemento([X|_],X).
+
 /*	Verifica si la lista es de un elemento de longitud	*/
 tieneUnElemento([_L1|Lx]):-Lx==[].
 
 /* controla si el elemento E es igual al unico elemento de la lista */
-sonComplementarios(E,[X]):- X=~E.
+sonComplementarios(E,[X]):- X= ~E.
+sonComplementarios(~E,[X]):-
+    atomic(E),
+    E=X.
+
+/* tiene complementario */
+tieneComplementario(E,[Y|Ys]):-
+    tieneUnElemento(Y),
+    sonComplementarios(E,Y);
+    tieneComplementario(E,Ys).    
 
 /* GENERA LOS BOTTOMS */
 /* caso base */
@@ -256,31 +269,34 @@ generarBottoms([],[]).
 /* caso general */
 generarBottoms([X|Xs],Rta):-
     tieneUnElemento(X),
-    generarBottomsAux(X,Xs,Rtaa),
-	generarBottoms(Xs, Rta1),
-    Rta=[Rtaa|Rta1];
+    primerElemento(X,E),
+    tieneComplementario(E,Xs),
+	borrarComplementario(E,Xs,Rtaa),
+	generarBottoms([bottom|Rtaa], Rta1),
+    Rta=Rta1;
     generarBottoms(Xs,Rta2),
     Rta=[X|Rta2].
 
 /* busca y si encuentra el complementario lo elimina. y escribe bottom */
 /* caso base */
-generarBottomsAux([],[]).
+borrarComplementario(_X,[],[]).
 /* caso general */
-generarBottomsAux(X,[Y|Ys],Rta):-
+borrarComplementario(X,[Y|Ys],Rta):-
     tieneUnElemento(Y),
     sonComplementarios(X,Y),
     Rta=[bottom|Ys];
-    generarBottomsAux(X,Ys,Rta).
-
+    borrarComplementario(X,Ys,Rta).
 
 
 /* ELIMINAR CLAUSULAS BOTTOM */
-eliminarBottoms(Lista, Rta) :-
-    	borrarTodas(bottom, Lista, Rta1),
-    	fixListaVacia(Rta1, Rta).
+eliminarBottoms(Lista, Rta):-
+    borrarTodas(bottom, Lista, Rta1),
+    fixListaVacia(Rta1, Rta).
 
 fixListaVacia([], [bottom]).
 fixListaVacia([X|Xs],[X|Xs]).
+
+
 
 
 /*-------------------PROGRAMA PRINCIPAL--------------------------------*/
