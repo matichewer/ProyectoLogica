@@ -285,8 +285,8 @@ borrarComplementario(X,[Y|Ys],Rta):-
     tieneUnElemento(Y),
     sonComplementarios(X,Y),
     Rta=[bottom|Ys];
-    borrarComplementario(X,Ys,Rta).
-
+    borrarComplementario(X,Ys,Rta1),
+    Rta=[Y|Rta1].
 
 /* ELIMINAR CLAUSULAS BOTTOM */
 eliminarBottoms(Lista, Rta):-
@@ -296,7 +296,22 @@ eliminarBottoms(Lista, Rta):-
 fixListaVacia([], [bottom]).
 fixListaVacia([X|Xs],[X|Xs]).
 
+/*PASAR DE UNA LISTA A UNA FBF*/
 
+pasarClausula([],_).
+pasarClausula([X],X).
+pasarClausula([X|Xs],Rta):-
+    pasarClausula(Xs,Rta1),
+    Rta= X \/ Rta1.
+
+pasarAfbf([],_).
+pasarAfbf([top],top).
+pasarAfbf([bottom],bottom).
+pasarAfbf([X],X).
+pasarAfbf([X|Xs],Rta):-
+    pasarClausula(X,Rta1),
+    pasarAfbf(Xs,Rta2),
+    Rta=Rta1/\Rta2.
 
 
 /*-------------------PROGRAMA PRINCIPAL--------------------------------*/
@@ -318,7 +333,12 @@ fncr(FBF,RTA4):-
     generarTops(RTA2,RTA3),
     writeln("Fbf guardada en la lista luego de generar tops "= RTA3),
     eliminarTops(RTA3,RTA4),
-    writeln("Fbf guardada en la lista luego de borrar tops "= RTA4).    
+    writeln("Fbf guardada en la lista luego de borrar tops "= RTA4),
+	generarBottoms(RTA4,RTA5),
+	writeln("Fbf guardada en la lista luego de generar bottoms "= RTA5),
+    eliminarBottoms(RTA5,RTA6),
+    writeln("Fbf guardada en la lista luego de borrar bottoms "= RTA6).
+    
 	/*
     fPaso3(FNC,R3),
     writeln("Fbf despues del paso3 "= R3).
