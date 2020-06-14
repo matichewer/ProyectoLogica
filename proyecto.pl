@@ -229,7 +229,7 @@ generarTops([Lx],Rta):-
 generarTops([X| Lx],Ls):-
     generarTops(Lx,Lz),
     tieneComplementario(X),
-    Ls=[top | Lz];
+    Ls=[[top] | Lz];
     generarTops(Lx,Lz),
     Ls=[X | Lz].
 
@@ -238,11 +238,40 @@ generarTops([X| Lx],Ls):-
 eliminarTops([],[]).
 /* caso general */
 eliminarTops([X|Lx],Rta):-  
-    X==top,
+    X==[top],
     eliminarTops(Lx,Lxx),
     Rta=Lxx;
     eliminarTops(Lx,Lxx),
     Rta=[X|Lxx].
+
+/*	Verifica si la lista es de un elemento de longitud	*/
+tieneUnElemento([_L1|Lx]):-Lx==[].
+
+/* controla si el elemento E es igual al unico elemento de la lista */
+sonComplementarios(E,[X]):- X=~E.
+
+/* GENERA LOS BOTTOMS */
+/* caso base */
+generarBottoms([],[]).
+/* caso general */
+generarBottoms([X|Xs],Rta):-
+    tieneUnElemento(X),
+    generarBottomsAux(X,Xs,Rtaa),
+	generarBottoms(Xs, Rta1),
+    Rta=[Rtaa|Rta1];
+    generarBottoms(Xs,Rta2),
+    Rta=[X|Rta2].
+
+/* busca y si encuentra el complementario lo elimina. y escribe bottom */
+/* caso base */
+generarBottomsAux([],[]).
+/* caso general */
+generarBottomsAux(X,[Y|Ys],Rta):-
+    tieneUnElemento(Y),
+    sonComplementarios(X,Y),
+    Rta=[bottom|Ys];
+    generarBottomsAux(X,Ys,Rta).
+
 
 
 
