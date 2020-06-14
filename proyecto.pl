@@ -274,6 +274,14 @@ generarBottomsAux(X,[Y|Ys],Rta):-
 
 
 
+/* ELIMINAR CLAUSULAS BOTTOM */
+eliminarBottoms(Lista, Rta) :-
+    	borrarTodas(bottom, Lista, Rta1),
+    	fixListaVacia(Rta1, Rta).
+
+fixListaVacia([], [bottom]).
+fixListaVacia([X|Xs],[X|Xs]).
+
 
 /*-------------------PROGRAMA PRINCIPAL--------------------------------*/
 
