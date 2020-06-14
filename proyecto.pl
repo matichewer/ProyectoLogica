@@ -223,7 +223,7 @@ tieneComplementario([X|Xs]):-
 /* caso base */
 generarTops([Lx],Rta):-
     tieneComplementario(Lx),
-    Rta=[top];
+    Rta=[[top]];
     Rta=[Lx].
 /* caso general */
 generarTops([X| Lx],Ls):-
