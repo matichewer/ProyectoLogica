@@ -319,13 +319,14 @@ borrarClausula([X|Xs],[Y|Ys],Rta):-
     borrarClausula([X|Xs],Ys,Rta1),
     Rta=Rta1;
     borrarClausula([X|Xs],Ys,Rta2),
-    Rta=[Y|Rta2].
-    
-/*
-borrarClaususlasRepetidas([X|Xs],[]):-
-    borrarClausula(X,Xs,Rt1a),
+    Rta=[Y|Rta2].  
+
+/* borrar clausulas repetidas de una lista */
+borrarClausulasRepetidas([],[]).
+borrarClausulasRepetidas([X|Xs],Rta):-
+    borrarClausula(X,Xs,Rta1),
     borrarClausulasRepetidas(Rta1,Rta2),
-    Rta==[X|Rta2]. */   
+    Rta=[X|Rta2]. 
 
 /*PASAR DE UNA LISTA A UNA FBF*/
 
@@ -375,7 +376,9 @@ fncr(FBF,FNCR):-
 	writeln("Fbf guardada en la lista luego de generar bottoms "= RTA5),
     eliminarBottoms(RTA5,RTA6),
     writeln("Fbf guardada en la lista luego de borrar bottoms "= RTA6),
-    transformarExpresion(RTA6,FNCR).    
+    borrarClausulasRepetidas(RTA6,RTA7),
+    writeln("Fbf guardada en la lista luego de borrar clausulas repetidas "= RTA7),
+    transformarExpresion(RTA7,FNCR).    
 	/*
     fPaso3(FNC,R3),
     writeln("Fbf despues del paso3 "= R3).
