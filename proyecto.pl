@@ -296,6 +296,37 @@ eliminarBottoms(Lista, Rta):-
 fixListaVacia([], [bottom]).
 fixListaVacia([X|Xs],[X|Xs]).
 
+/* ELIMINAR CLAUSULAS REPETIDAS */
+
+ /* true si dos listas tienen la misma longitud */
+mismoLargoListas(L1,L2):-
+    length(L1,Rta1),
+    length(L2,Rta2),
+    Rta1==Rta2.
+
+/* devuelve true si todos los elementos de la primer lista
+  estan en la Lista, false caso contrario*/
+listasSonIguales([],_).
+listasSonIguales([X|Xs],Lista):-
+    esta(X,Lista),
+    listasSonIguales(Xs,Lista).
+
+/*borrarClausula([],Lista,Lista).*/
+borrarClausula(_,[],[]).
+borrarClausula([X|Xs],[Y|Ys],Rta):-
+    mismoLargoListas([X|Xs],Y),
+    listasSonIguales([X|Xs],Y),
+    borrarClausula([X|Xs],Ys,Rta1),
+    Rta=Rta1;
+    borrarClausula([X|Xs],Ys,Rta2),
+    Rta=[Y|Rta2].
+    
+/*
+borrarClaususlasRepetidas([X|Xs],[]):-
+    borrarClausula(X,Xs,Rt1a),
+    borrarClausulasRepetidas(Rta1,Rta2),
+    Rta==[X|Rta2]. */   
+
 /*PASAR DE UNA LISTA A UNA FBF*/
 
 pasarClausula([],_).
@@ -316,6 +347,8 @@ pasarAfbf([X|Xs],Rta):-
 transformarExpresion(A,Rta):- 
     pasarAfbf(A,Rta1),
     eliminarParentesis(Rta1,Rta). 
+
+
 
 
 /*-------------------PROGRAMA PRINCIPAL--------------------------------*/
