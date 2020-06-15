@@ -95,28 +95,6 @@ fPaso2Iterado(F, Rdo):-
 fPaso2Iterado(F, F):-
 	fPaso2(F, F2),
 	F = F2.
-	
-/* TERCER PASO PARA TRANSFORMAR A FNCR */
-
-fPaso3(P,P):-atomic(P).
-fPaso3(~P,~P):- atomic(P).
-/*bottom*/
-fPaso3(bottom,bottom).
-fPaso3( _ /\ bottom, bottom).
-fPaso3(bottom /\ _ , bottom).
-fPaso3(P /\ Q, P1 /\ Q1 ):-
-    fPaso3(P,P1),
-    fPaso3(Q,Q1).
-/*top*/
-fPaso3(top,top). 
-fPaso3(top /\ P, P1):- fPaso3(P,P1).
-fPaso3a(P /\ top, P1):-fPaso3a(P,P1).
-
-/* CUARTO PASO PARA TRANSFORMAR A FNCR */
-
-borrarRepetidos(P \/ P, P).
-borrarRepetidos(~P \/ ~P, ~P).
-borrarRepetidos(P \/ ~P, bottom).
 
 /* ELIMINO LOS PARENTESIS DE MÁS DE MI FBF */
 
@@ -298,7 +276,7 @@ fixListaVacia([X|Xs],[X|Xs]).
 
 /* ELIMINAR CLAUSULAS REPETIDAS */
 
- /* true si dos listas tienen la misma longitud */
+/* true si dos listas tienen la misma longitud */
 mismoLargoListas(L1,L2):-
     length(L1,Rta1),
     length(L2,Rta2),
@@ -347,7 +325,10 @@ pasarAfbf([X|Xs],Rta):-
 
 transformarExpresion(A,Rta):- 
     pasarAfbf(A,Rta1),
-    eliminarParentesis(Rta1,Rta). 
+    eliminarParentesis(Rta1,Rta).
+
+
+
 
 
 
@@ -378,8 +359,4 @@ fncr(FBF,FNCR):-
     writeln("Fbf guardada en la lista luego de borrar bottoms "= RTA6),
     borrarClausulasRepetidas(RTA6,RTA7),
     writeln("Fbf guardada en la lista luego de borrar clausulas repetidas "= RTA7),
-    transformarExpresion(RTA7,FNCR).    
-	/*
-    fPaso3(FNC,R3),
-    writeln("Fbf despues del paso3 "= R3).
-    */
+    transformarExpresion(RTA7,FNCR).
