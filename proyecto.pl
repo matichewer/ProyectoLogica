@@ -222,7 +222,7 @@ eliminarTops([X|Lx],Rta):-
     eliminarTops(Lx,Lxx),
     Rta=[X|Lxx].
 
-craerTop([],[top]).
+crearTop([],[top]).
 crearTop(X,X).
 
 /*Obtener primer elemento de una lista */
@@ -285,7 +285,7 @@ mismoLargoListas(L1,L2):-
 
 /* devuelve true si todos los elementos de la primer lista
   estan en la Lista, false caso contrario*/
-listasSonIugales([],[]). /* nuevo */
+listasSonIguales([],[]). /* nuevo */
 listasSonIguales(X,X). /* nuevo */
 listasSonIguales([],_).
 listasSonIguales([X|Xs],Lista):-
