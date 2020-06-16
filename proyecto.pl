@@ -432,12 +432,9 @@ cadaClausulaConElResto(X,[_|Ls],Rs):-
     cadaClausulaConElResto(X,Ls,Rs).
 
 
-% Resolvente/3 recibe como primer y segundo argumento dos clausulas y
-% por cada literal A de Clausula1, si existe el literal negado en
-% Clausula2 lo elimina de clausula 2 y devuelve una clausula en su
-% tercer argumento que es la union de Clausula1 sin A y Clausula2 sin A
-% negado. sino me devuelve falso.
-
+/* Por cada literal de la primer clausula, busca su complementario en la segunda clausula.
+ * En caso de encontrarlo, retorna la union de ambas clausulas sin el par de literales complementarios.
+ * Caso contrario, retorna falso */
 resolventeEntreDosClausulas([X],[~X],[bottom]).
 resolventeEntreDosClausulas([~X],[X],[bottom]).
 resolventeEntreDosClausulas(X,Y,R):-resolventeEntreDosClausulasAux(X,Y,R).
