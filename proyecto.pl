@@ -312,9 +312,15 @@ transformarExpresion(A,Rta):-
     pasarAfbf(A,Rta1),
     eliminarParentesis(Rta1,Rta).
 
-/------------------------REFUTABLE------------------------------------/
+/*------------------------REFUTABLE------------------------------------*/
 
 refutable(S):- guardarExpresion(S,R),!,refutar(R).
+
+
+/* iguales */
+cascaraListasIguales([],[]).
+cascaracListasIguales(X,X).
+cascaraListasIguales([X|_],Y):- listasIguales(X,Y).
 
 
 /* une nos listas sin repetir los elementos */
@@ -332,7 +338,7 @@ pertenece(E,[X|_]):- E=X.
 pertenece(E,[_|Xs]):- pertenece(E,Xs).
 
 
-/-------------------PROGRAMA PRINCIPAL--------------------------------/
+/*-------------------PROGRAMA PRINCIPAL--------------------------------*/
 
 
 fncr(FBF,FNCR):-
