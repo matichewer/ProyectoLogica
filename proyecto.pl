@@ -4,6 +4,7 @@
 :- op(600,xfx,=>). % implicacion, infija, no asociativa.
 :- op(650,xfx,<=>). % equivalencia, infija, no asociativa.
 
+
 /* ELIMINO TODAS LAS IMPLICACIONES DE MI FBF */
 
 transformarImplicaciones(P,P):- atomic(P).
@@ -20,6 +21,7 @@ transformarImplicaciones( P /\ Q, (P1) /\ (Q1) ):-
 transformarImplicaciones(P <=> Q, (P1) <=> (Q1) ):-
     transformarImplicaciones(P,P1),
     transformarImplicaciones(Q,Q1).
+
 
 /* ELIMINO TODAS LAS EQUIVALENCIAS DE MI FBF */
 
@@ -38,11 +40,13 @@ transformarEquivalencias(P => Q, (P1) => (Q1)):-
     transformarEquivalencias(P,P1),
     transformarEquivalencias(Q,Q1).
 
+
 /* ELIMINO LAS IMPLICACIONES Y EQUIVALENCIAS DE MI FBF */
 
 fBienEscrita(F,RTA):- 
     transformarImplicaciones(F,Rta1),
-    transformarEquivalencias(Rta1,RTA).	
+    transformarEquivalencias(Rta1,RTA). 
+
 
 /* PRIMER PASO PARA TRANSFORMAR A FNCR */
 
@@ -65,6 +69,7 @@ fPaso1(P \/ Q, (P1) \/ (Q1) ):-
 fPaso1(P /\ Q, (P1) /\ (Q1) ):-
     fPaso1(P,P1),
     fPaso1(Q,Q1).
+
 
 /* SEGUNDO PASO PARA TRANSFORMAR A FNCR */
 
@@ -89,12 +94,13 @@ fPaso2(bottom \/ P, P).
 
 /* cascara para el fPaso2 */
 fPaso2Iterado(F, Rdo):-
-	fPaso2(F, F2),
-	F \= F2,
-	fPaso2Iterado(F2, Rdo).
+    fPaso2(F, F2),
+    F \= F2,
+    fPaso2Iterado(F2, Rdo).
 fPaso2Iterado(F, F):-
-	fPaso2(F, F2),
-	F = F2.
+    fPaso2(F, F2),
+    F = F2.
+
 
 /* ELIMINO LOS PARENTESIS DE MÁS DE MI FBF */
 
@@ -121,6 +127,7 @@ eliminarParentesis(A /\ B, Ra /\ Rb) :-
     eliminarParentesis(A, Ra), 
     eliminarParentesis(B, Rb). 
 
+
 /* GUARDAR UNA EXPRESION EN UNA LISTA */
 
 guardarExpresion(A,[[A]]):-atomic(A).
@@ -132,6 +139,7 @@ guardarExpresion(A /\ B,L):-
 guardarExpresion(A \/ B,[L]):-
     guardarClausula(A\/B,L).
 
+
 /* GUARDAR UNA CLAUSULA */
 
 /* caso general donde se separa los \/ */
@@ -142,6 +150,7 @@ guardarClausula(A \/ B, L):-
 /* Caso base donde no hay mas \/ */
 guardarClausula(A,[A]).
 
+
 /* UNIR DOS LISTAS */
 
 /* caso base */
@@ -150,6 +159,7 @@ unir([],Ly,Ly).
 /* caso recursivo */
 unir([X|Lx],L2,[X|Lrta]):-
     unir(Lx,L2,Lrta).
+
 
 /* ELIMINAR ELEMENTOS REPETIDOS */
 
@@ -161,7 +171,9 @@ eliminarRepetidos([X|Lx],[LX|Lresto]):-
     eliminarRepetidos(Lx,Lresto),
     reducirClausula(X,LX).
 
+
 /* BORRAR TODAS LAS APARICIONES DE UN ELEMENTO EN UNA LISTA */
+
 borrarTodas(_,[],[]).
 borrarTodas(X,[X|Xs],L):- borrarTodas(X,Xs,L).
 borrarTodas(X,[T|Ts],[T|L1]):- borrarTodas(X,Ts,L1).
@@ -176,16 +188,19 @@ reducirClausula([X|Lx],[X|Lrta]):-
     borrarTodas(X,Lx,Lrto),
     reducirClausula(Lrto,Lrta).
 
-/* ENCONTRAR COMPLEMENTARIOS */
 
+/* ENCONTRAR COMPLEMENTARIOS */
+/* retorna true en caso de encontrar un elemento en una lista */
 esta(X, [X | _]).
 esta(X, [_ | T]) :- esta(X, T).
+
 
 /* EXISTE COMPLEMENTARIO */
 /* devuelve true si existe el complementario del elemento
    X en la lista, false en caso contrario */
 existeComplementario(X,Lista):- atomic(X), esta(~X,Lista).
 existeComplementario(~X,Lista):- atom(X), esta(X,Lista).
+
 
 /* TIENE COMPLEMENTARIO */
 /* devuelve true si algun elemento de la clausula tiene
@@ -196,6 +211,7 @@ tieneComplementario([X|Xs]):-
 tieneComplementario([X|Xs]):-
     not(existeComplementario(X,Xs)),
     tieneComplementario(Xs).
+
 
 /* GENERAR TOPS*/
 /* caso base */
@@ -211,6 +227,7 @@ generarTops([X| Lx],Ls):-
     generarTops(Lx,Lz),
     Ls=[X | Lz].
 
+
 /* ELIMINAR CLAUSULAS TOP */
 /* casos base */
 eliminarTops([],[]).
@@ -222,25 +239,34 @@ eliminarTops([X|Lx],Rta):-
     eliminarTops(Lx,Lxx),
     Rta=[X|Lxx].
 
+/* Crea un top en caso de que la lista quede vacia.
+ * Esto ocurre cuando todas las clausulas son top y
+ * por eso al borrarlas, la lista queda vacia
+ * */
 crearTop([],[top]).
 crearTop(X,X).
+
 
 /*Obtener primer elemento de una lista */
 primerElemento([],[]).
 primerElemento([X|_],X).
 
-/*	Verifica si la lista es de un elemento de longitud	*/
+
+/*  Verifica si la lista es de un elemento de longitud  */
 tieneUnElemento([_L1|Lx]):-Lx==[].
 
+
 /* controla si el elemento E es igual al unico elemento de la lista */
-sonComplementarios(E,[X]):- X= ~E.
-sonComplementarios(~E,[X]):- atomic(E),E=X.
+sonComplementarios(E,[X]) :- X = ~E.
+sonComplementarios(~E,[X]) :- atomic(E),E=X.
+
 
 /* tiene complementario */
 tieneComplementario(E,[Y|Ys]):-
     tieneUnElemento(Y),
     sonComplementarios(E,Y);
     tieneComplementario(E,Ys).    
+
 
 /* GENERA LOS BOTTOMS */
 /* caso base */
@@ -250,11 +276,12 @@ generarBottoms([X|Xs],Rta):-
     tieneUnElemento(X),
     primerElemento(X,E),
     tieneComplementario(E,Xs),
-	borrarComplementario(E,Xs,Rtaa),
-	generarBottoms([bottom|Rtaa], Rta1),
+    borrarComplementario(E,Xs,Rtaa),
+    generarBottoms([bottom|Rtaa], Rta1),
     Rta=Rta1;
     generarBottoms(Xs,Rta2),
     Rta=[X|Rta2].
+
 
 /* busca y si encuentra el complementario lo elimina. y escribe bottom */
 /* caso base */
@@ -267,13 +294,15 @@ borrarComplementario(X,[Y|Ys],Rta):-
     borrarComplementario(X,Ys,Rta1),
     Rta=[Y|Rta1].
 
+
 /* ELIMINAR CLAUSULAS BOTTOM */
 eliminarBottoms(Lista, Rta):-
     borrarTodas(bottom, Lista, Rta1),
-    fixListaVacia(Rta1, Rta).
+    crearBottom(Rta1, Rta).
 
-fixListaVacia([], [bottom]).
-fixListaVacia([X|Xs],[X|Xs]).
+crearBottom([], [bottom]).
+crearBottom([X|Xs],[X|Xs]).
+
 
 /* ELIMINAR CLAUSULAS REPETIDAS */
 
@@ -309,6 +338,7 @@ borrarClausulasRepetidas([X|Xs],Rta):-
     borrarClausulasRepetidas(Rta1,Rta2),
     Rta=[X|Rta2]. 
 
+
 /*PASAR DE UNA LISTA A UNA FBF*/
 
 pasarClausula([],_).
@@ -333,35 +363,62 @@ transformarExpresion(A,Rta):-
 /*-------------------------------------REFURTABLE-------------------------*/
 
 
-refutable(S):- guardarExpresion(S,R),!,refutar(R).
 
-/* iguales */
-cascaraListasIguales([],[]).
-cascaraListasIguales(X,X).
-cascaraListasIguales([X|_],Y):- listasSonIguales(X,Y).
+/* recorrerListaDeClausulas /2
+para cada elemento de la lista, es decir, para cada cláusula,
+llamamos al predicado cadaClausulaConElResto /3 */
+recorrerListaDeClausulas([],[]).
+recorrerListaDeClausulas([X|Xs],Rta):- 
+    cadaClausulaConElResto(X, Xs, ConjResolv),
+    recorrerListaDeClausulas(Xs, NuevasResolv),
+    unir(NuevasResolv, ConjResolv, ConjTotal),
+    borrarClausulasRepetidas(ConjTotal,Rta).
 
-/* une nos listas sin repetir los elementos */
+/* vinculamos la primer clausula de la lista con el resto de las clausulas.
+ * Retornamos una lista con todas las resolventes */
+cadaClausulaConElResto(_,[],[]).
+cadaClausulaConElResto(X1,[X2|Ls],[Resolv|Rs]):-
+    resolventeEntreDosClausulas(X1,X2,Resolv),
+    cadaClausulaConElResto(X1,Ls,Rs).
+cadaClausulaConElResto(X,[_|Ls],Rs):- 
+    cadaClausulaConElResto(X,Ls,Rs).
+
+
+
+
+resolventeEntreDosClausulas([X],[~X],[bottom]).
+resolventeEntreDosClausulas([~X],[X],[bottom]).
+resolventeEntreDosClausulas(X,Y,R):-resolventeEntreDosClausulasAux(X,Y,R).
+
+resolventeEntreDosClausulasAux([X|Xs],Y,Rta):-eliminarComplementarios(X,Y,Rta1),unirSinRepeticiones(Xs,Rta1,Rta).
+resolventeEntreDosClausulasAux([X|Xs],Y,Rta1):-resolventeEntreDosClausulasAux(Xs,Y,Rta1),esta(X,Rta1).
+resolventeEntreDosClausulasAux([X|Xs],Y,[X|Rta1]):-resolventeEntreDosClausulasAux(Xs,Y,Rta1).
+
+
+eliminarComplementarios(X,[~X|Xs],Xs).
+eliminarComplementarios(~X,[X|Xs],Xs).
+eliminarComplementarios(X,[X|Xs],[X|R]) :- eliminarComplementarios(X,Xs,R). 
+eliminarComplementarios(X,[Y|Ys],[Y|R]) :- eliminarComplementarios(X,Ys,R).
+
+
 unirSinRepeticiones([],C1,C1).
 unirSinRepeticiones([X|Xs],C1,Rta2):- not(pertenece(X,C1)), insertar(X,C1,Rta), unirSinRepeticiones(Xs,Rta,Rta2).
 unirSinRepeticiones([X|Xs],C1,Rta):- pertenece(X,C1), unirSinRepeticiones(Xs,C1,Rta).
 
-
-/* insertar el elemento E en la lista,si es que E no pertenece a la lista */
 insertar(E,[],[E]).
 insertar(E,Conjunto,[E|Conjunto]):- not(pertenece(E,Conjunto)). 
 insertar(E,Conjunto,Conjunto):- pertenece(E,Conjunto).
 
-
-/* true si E pertenece a la lista, falso caso contrario */
 pertenece(E,[X|_]):- E=X.
 pertenece(E,[_|Xs]):- pertenece(E,Xs).
 
-
+cascaraListasIguales([],[]).
+cascaraListasIguales(X,X).
+cascaraListasIguales([X|_],Y):- listasSonIguales(X,Y).
 
 
 
 /*-------------------PROGRAMA PRINCIPAL--------------------------------*/
-
 
 fncr(FBF,FNCR):-
     fBienEscrita(FBF,R1),
@@ -372,7 +429,7 @@ fncr(FBF,FNCR):-
     writeln("Fbf despues del paso 2 "= FNC),
     eliminarParentesis(FNC,RTA),
     writeln("Fbf sin parentesis de mas "= RTA),
-	guardarExpresion(RTA,RTA1),
+    guardarExpresion(RTA,RTA1),
     writeln("Fbf guardada en la lista "= RTA1),
     eliminarRepetidos(RTA1,RTA2),
     writeln("Fbf guardada en la lista sin repeticiones "= RTA2),
@@ -382,7 +439,7 @@ fncr(FBF,FNCR):-
     crearTop(RTA44,RTA4),
     writeln("Fbf guardada en la lista luego de borrar tops "= RTA4),
     generarBottoms(RTA4,RTA5),
-	writeln("Fbf guardada en la lista luego de generar bottoms "= RTA5),
+    writeln("Fbf guardada en la lista luego de generar bottoms "= RTA5),
     eliminarBottoms(RTA5,RTA6),
     writeln("Fbf guardada en la lista luego de borrar bottoms "= RTA6),
     borrarClausulasRepetidas(RTA6,RTA7),
