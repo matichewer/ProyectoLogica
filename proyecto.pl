@@ -473,5 +473,5 @@ cascaraListasIguales([X|_],Y):- listasSonIguales(X,Y).
 
 /*---------------------------- TEOREMA ----------------------------*/
 
-teorema(X):-fncr(~X,Rta), ! , refutable(Rta).
+teorema(F):-fncr(~F, FNCR), ! , refutable(FNCR).
 
