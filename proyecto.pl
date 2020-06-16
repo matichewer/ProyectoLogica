@@ -45,7 +45,7 @@ transformarEquivalencias(P => Q, (P1) => (Q1)):-
 
 fBienEscrita(F,RTA):- 
     transformarImplicaciones(F,Rta1),
-    transformarEquivalencias(Rta1,RTA). 
+    transformarEquivalencias(Rta1,RTA).	
 
 
 /* PRIMER PASO PARA TRANSFORMAR A FNCR */
@@ -94,12 +94,12 @@ fPaso2(bottom \/ P, P).
 
 /* cascara para el fPaso2 */
 fPaso2Iterado(F, Rdo):-
-    fPaso2(F, F2),
-    F \= F2,
-    fPaso2Iterado(F2, Rdo).
+	fPaso2(F, F2),
+	F \= F2,
+	fPaso2Iterado(F2, Rdo).
 fPaso2Iterado(F, F):-
-    fPaso2(F, F2),
-    F = F2.
+	fPaso2(F, F2),
+	F = F2.
 
 
 /* ELIMINO LOS PARENTESIS DE MÁS DE MI FBF */
@@ -252,7 +252,7 @@ primerElemento([],[]).
 primerElemento([X|_],X).
 
 
-/*  Verifica si la lista es de un elemento de longitud  */
+/*	Verifica si la lista es de un elemento de longitud	*/
 tieneUnElemento([_L1|Lx]):-Lx==[].
 
 
@@ -276,8 +276,8 @@ generarBottoms([X|Xs],Rta):-
     tieneUnElemento(X),
     primerElemento(X,E),
     tieneComplementario(E,Xs),
-    borrarComplementario(E,Xs,Rtaa),
-    generarBottoms([bottom|Rtaa], Rta1),
+	borrarComplementario(E,Xs,Rtaa),
+	generarBottoms([bottom|Rtaa], Rta1),
     Rta=Rta1;
     generarBottoms(Xs,Rta2),
     Rta=[X|Rta2].
@@ -360,9 +360,57 @@ transformarExpresion(A,Rta):-
     pasarAfbf(A,Rta1),
     eliminarParentesis(Rta1,Rta).
 
-/*-------------------------------------REFURTABLE-------------------------*/
+
+/*--------------------- FNCR PASO POR PASO ----------------------------*/
+
+fncr(FBF,FNCR):-
+    fBienEscrita(FBF,R1),
+    writeln("Fbf sin implicaciones ni equivalencias"= R1),
+    fPaso1(R1,R2),
+    writeln("Fbf con negaciones acomodadas,Paso1"= R2),
+    fPaso2Iterado(R2,FNC),
+    writeln("Fbf despues del paso 2 "= FNC),
+    eliminarParentesis(FNC,RTA),
+    writeln("Fbf sin parentesis de mas "= RTA),
+	guardarExpresion(RTA,RTA1),
+    writeln("Fbf guardada en la lista "= RTA1),
+    eliminarRepetidos(RTA1,RTA2),
+    writeln("Fbf guardada en la lista sin repeticiones "= RTA2),
+    generarTops(RTA2,RTA3),
+    writeln("Fbf guardada en la lista luego de generar tops "= RTA3),
+    eliminarTops(RTA3,RTA44),
+    crearTop(RTA44,RTA4),
+    writeln("Fbf guardada en la lista luego de borrar tops "= RTA4),
+    generarBottoms(RTA4,RTA5),
+	writeln("Fbf guardada en la lista luego de generar bottoms "= RTA5),
+    eliminarBottoms(RTA5,RTA6),
+    writeln("Fbf guardada en la lista luego de borrar bottoms "= RTA6),
+    borrarClausulasRepetidas(RTA6,RTA7),
+    writeln("Fbf guardada en la lista luego de borrar clausulas repetidas "= RTA7),
+    transformarExpresion(RTA7,FNCR).
 
 
+
+
+
+/*-------------------------------REFURTABLE---------------------------------*/
+
+refutable(FNCR):- guardarExpresion(FNCR, Claus), !, refutarLista(Claus).
+
+refutarLista(Claus):-
+    esta([bottom],Claus),
+    writeln(Claus).
+refutarLista(Claus):-
+    recorrerListaDeClausulas(Claus,Resolv),
+    writeln("Clausulas:"),
+    writeln(Claus),
+    writeln("Resolventes: "),
+    writeln(Resolv),
+    unir(Claus,Resolv,UnionConRepet),
+    borrarClausulasRepetidas(UnionConRepet,UnionSinRepet), 
+    !,
+    not(cascaraListasIguales(Claus,UnionSinRepet)),
+    refutarLista(UnionSinRepet).
 
 /* recorrerListaDeClausulas /2
 para cada elemento de la lista, es decir, para cada cláusula,
@@ -384,21 +432,25 @@ cadaClausulaConElResto(X,[_|Ls],Rs):-
     cadaClausulaConElResto(X,Ls,Rs).
 
 
-
+% Resolvente/3 recibe como primer y segundo argumento dos clausulas y
+% por cada literal A de Clausula1, si existe el literal negado en
+% Clausula2 lo elimina de clausula 2 y devuelve una clausula en su
+% tercer argumento que es la union de Clausula1 sin A y Clausula2 sin A
+% negado. sino me devuelve falso.
 
 resolventeEntreDosClausulas([X],[~X],[bottom]).
 resolventeEntreDosClausulas([~X],[X],[bottom]).
 resolventeEntreDosClausulas(X,Y,R):-resolventeEntreDosClausulasAux(X,Y,R).
 
-resolventeEntreDosClausulasAux([X|Xs],Y,Rta):-eliminarComplementarios(X,Y,Rta1),unirSinRepeticiones(Xs,Rta1,Rta).
+resolventeEntreDosClausulasAux([X|Xs],Y,Rta):-borrarComplementarios(X,Y,Rta1),unirSinRepeticiones(Xs,Rta1,Rta).
 resolventeEntreDosClausulasAux([X|Xs],Y,Rta1):-resolventeEntreDosClausulasAux(Xs,Y,Rta1),esta(X,Rta1).
 resolventeEntreDosClausulasAux([X|Xs],Y,[X|Rta1]):-resolventeEntreDosClausulasAux(Xs,Y,Rta1).
 
 
-eliminarComplementarios(X,[~X|Xs],Xs).
-eliminarComplementarios(~X,[X|Xs],Xs).
-eliminarComplementarios(X,[X|Xs],[X|R]) :- eliminarComplementarios(X,Xs,R). 
-eliminarComplementarios(X,[Y|Ys],[Y|R]) :- eliminarComplementarios(X,Ys,R).
+borrarComplementarios(X,[~X|Xs],Xs).
+borrarComplementarios(~X,[X|Xs],Xs).
+borrarComplementarios(X,[X|Xs],[X|R]) :- borrarComplementarios(X,Xs,R). 
+borrarComplementarios(X,[Y|Ys],[Y|R]) :- borrarComplementarios(X,Ys,R).
 
 
 unirSinRepeticiones([],C1,C1).
@@ -418,30 +470,8 @@ cascaraListasIguales([X|_],Y):- listasSonIguales(X,Y).
 
 
 
-/*-------------------PROGRAMA PRINCIPAL--------------------------------*/
 
-fncr(FBF,FNCR):-
-    fBienEscrita(FBF,R1),
-    writeln("Fbf sin implicaciones ni equivalencias"= R1),
-    fPaso1(R1,R2),
-    writeln("Fbf con negaciones acomodadas,Paso1"= R2),
-    fPaso2Iterado(R2,FNC),
-    writeln("Fbf despues del paso 2 "= FNC),
-    eliminarParentesis(FNC,RTA),
-    writeln("Fbf sin parentesis de mas "= RTA),
-    guardarExpresion(RTA,RTA1),
-    writeln("Fbf guardada en la lista "= RTA1),
-    eliminarRepetidos(RTA1,RTA2),
-    writeln("Fbf guardada en la lista sin repeticiones "= RTA2),
-    generarTops(RTA2,RTA3),
-    writeln("Fbf guardada en la lista luego de generar tops "= RTA3),
-    eliminarTops(RTA3,RTA44),
-    crearTop(RTA44,RTA4),
-    writeln("Fbf guardada en la lista luego de borrar tops "= RTA4),
-    generarBottoms(RTA4,RTA5),
-    writeln("Fbf guardada en la lista luego de generar bottoms "= RTA5),
-    eliminarBottoms(RTA5,RTA6),
-    writeln("Fbf guardada en la lista luego de borrar bottoms "= RTA6),
-    borrarClausulasRepetidas(RTA6,RTA7),
-    writeln("Fbf guardada en la lista luego de borrar clausulas repetidas "= RTA7),
-    transformarExpresion(RTA7,FNCR).
+/*---------------------------- TEOREMA ----------------------------*/
+
+teorema(X):-fncr(~X,Rta), ! , refutable(Rta).
+
