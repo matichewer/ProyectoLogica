@@ -5,8 +5,9 @@
 :- op(650,xfx,<=>). % equivalencia, infija, no asociativa.
 
 /* ELIMINO TODAS LAS IMPLICACIONES DE MI FBF */
+
 transformarImplicaciones(P,P):- atomic(P).
-transformarImplicaciones(P,(RTA)):-transformarImplicaciones(P,RTA).
+transformarImplicaciones(~P,~(RTA)):- transformarImplicaciones(P,RTA).
 transformarImplicaciones(P \/ Q, (P1) \/ (Q1) ):-
     transformarImplicaciones(P,P1),
     transformarImplicaciones(Q,Q1).
@@ -21,9 +22,10 @@ transformarImplicaciones(P <=> Q, (P1) <=> (Q1) ):-
     transformarImplicaciones(Q,Q1).
 
 /* ELIMINO TODAS LAS EQUIVALENCIAS DE MI FBF */
+
 transformarEquivalencias(P,P):- atomic(P).
-transformarEquivalencias(P,(RTA)):- transformarEquivalencias(P,RTA). 
-transformarEquivalencias( P <=> Q, ((P1)\/(Q1)) /\ ((Q1) \/ (P1)) ):-
+transformarEquivalencias(~P,~(RTA)):- transformarEquivalencias(P,RTA). 
+transformarEquivalencias( P <=> Q, (~(P1)\/(Q1)) /\ (~(Q1) \/ (P1)) ):-
     transformarEquivalencias(P,P1),
     transformarEquivalencias(Q,Q1).
 transformarEquivalencias(P \/ Q, (P1) \/ (Q1) ):-
@@ -37,17 +39,20 @@ transformarEquivalencias(P => Q, (P1) => (Q1)):-
     transformarEquivalencias(Q,Q1).
 
 /* ELIMINO LAS IMPLICACIONES Y EQUIVALENCIAS DE MI FBF */
+
 fBienEscrita(F,RTA):- 
     transformarImplicaciones(F,Rta1),
-    transformarEquivalencias(Rta1,RTA).
+    transformarEquivalencias(Rta1,RTA).	
 
 /* PRIMER PASO PARA TRANSFORMAR A FNCR */
+
 fPaso1(~top, bottom).
 fPaso1(~bottom, top).
 fPaso1(P,P):- atomic(P).
 fPaso1( ~P, ~P):- atomic(P).
 fPaso1( ~(~P) , P1 ):- fPaso1(P,P1).
 fPaso1( ~(~P) , P ):- atomic(P).
+
 fPaso1(~(P \/ Q), (P1) /\ (Q1) ):-
     fPaso1(~P,P1),
     fPaso1(~Q,Q1).
@@ -62,6 +67,7 @@ fPaso1(P /\ Q, (P1) /\ (Q1) ):-
     fPaso1(Q,Q1).
 
 /* SEGUNDO PASO PARA TRANSFORMAR A FNCR */
+
 fPaso2(P,P):- atomic(P).
 fPaso2(~P,~P):- atomic(P).
 fPaso2( P1 \/ (P2 /\ P3), (P01) /\ (P02) ):-
@@ -91,6 +97,7 @@ fPaso2Iterado(F, F):-
 	F = F2.
 
 /* ELIMINO LOS PARENTESIS DE MÁS DE MI FBF */
+
 eliminarParentesis(A, A) :- atom(A).
 eliminarParentesis(~A, ~A) :- atom(A).
 eliminarParentesis(A \/ D, Re) :- 
@@ -115,6 +122,7 @@ eliminarParentesis(A /\ B, Ra /\ Rb) :-
     eliminarParentesis(B, Rb). 
 
 /* GUARDAR UNA EXPRESION EN UNA LISTA */
+
 guardarExpresion(A,[[A]]):-atomic(A).
 guardarExpresion(~A,[[~A]]):-atomic(A).
 guardarExpresion(A /\ B,L):-
@@ -125,6 +133,7 @@ guardarExpresion(A \/ B,[L]):-
     guardarClausula(A\/B,L).
 
 /* GUARDAR UNA CLAUSULA */
+
 /* caso general donde se separa los \/ */
 guardarClausula(A \/ B, L):-
     guardarClausula(A,L1),
@@ -134,14 +143,19 @@ guardarClausula(A \/ B, L):-
 guardarClausula(A,[A]).
 
 /* UNIR DOS LISTAS */
+
+/* caso base */
 unir(Lx,[],Lx).
 unir([],Ly,Ly).
+/* caso recursivo */
 unir([X|Lx],L2,[X|Lrta]):-
     unir(Lx,L2,Lrta).
 
 /* ELIMINAR ELEMENTOS REPETIDOS */
+
 /* caso base */
-eliminarRepetidos([X],[Lx]):- reducirClausula(X,Lx).
+eliminarRepetidos([X],[Lx]):-
+    reducirClausula(X,Lx).
 /* caso recursivo */
 eliminarRepetidos([X|Lx],[LX|Lresto]):-
     eliminarRepetidos(Lx,Lresto),
@@ -154,6 +168,7 @@ borrarTodas(X,[T|Ts],[T|L1]):- borrarTodas(X,Ts,L1).
 
 
 /* REDUCIR UNA CLAUSULA */
+
 /* caso base */
 reducirClausula([],[]).
 /* caso recursivo */
@@ -162,6 +177,7 @@ reducirClausula([X|Lx],[X|Lrta]):-
     reducirClausula(Lrto,Lrta).
 
 /* ENCONTRAR COMPLEMENTARIOS */
+
 esta(X, [X | _]).
 esta(X, [_ | T]) :- esta(X, T).
 
@@ -206,7 +222,7 @@ eliminarTops([X|Lx],Rta):-
     eliminarTops(Lx,Lxx),
     Rta=[X|Lxx].
 
-crearTop([],[top]).
+craerTop([],[top]).
 crearTop(X,X).
 
 /*Obtener primer elemento de una lista */
@@ -260,26 +276,27 @@ fixListaVacia([], [bottom]).
 fixListaVacia([X|Xs],[X|Xs]).
 
 /* ELIMINAR CLAUSULAS REPETIDAS */
+
 /* true si dos listas tienen la misma longitud */
 mismoLargoListas(L1,L2):-
     length(L1,Rta1),
     length(L2,Rta2),
     Rta1==Rta2.
 
-/* devuelve true si dos elementos o dos listas son iguales, 
-false caso contrario*/
-listasIguales([],[]). 
-listasIguales(X,X).   
-listasIguales([],_).
-listasIguales([X|Xs],Lista):-
+/* devuelve true si todos los elementos de la primer lista
+  estan en la Lista, false caso contrario*/
+listasSonIugales([],[]). /* nuevo */
+listasSonIguales(X,X). /* nuevo */
+listasSonIguales([],_).
+listasSonIguales([X|Xs],Lista):-
     esta(X,Lista),
-    listasIguales(Xs,Lista).
+    listasSonIguales(Xs,Lista).
 
-borrarClausula([],Lista,Lista).
+/*borrarClausula([],Lista,Lista).*/
 borrarClausula(_,[],[]).
 borrarClausula([X|Xs],[Y|Ys],Rta):-
     mismoLargoListas([X|Xs],Y),
-    listasIguales([X|Xs],Y),
+    listasSonIguales([X|Xs],Y),
     borrarClausula([X|Xs],Ys,Rta1),
     Rta=Rta1;
     borrarClausula([X|Xs],Ys,Rta2),
@@ -292,7 +309,8 @@ borrarClausulasRepetidas([X|Xs],Rta):-
     borrarClausulasRepetidas(Rta1,Rta2),
     Rta=[X|Rta2]. 
 
-/* PASAR DE UNA LISTA A UNA FBF */
+/*PASAR DE UNA LISTA A UNA FBF*/
+
 pasarClausula([],_).
 pasarClausula([X],X).
 pasarClausula([X|Xs],Rta):-
@@ -312,30 +330,12 @@ transformarExpresion(A,Rta):-
     pasarAfbf(A,Rta1),
     eliminarParentesis(Rta1,Rta).
 
-/*------------------------REFUTABLE------------------------------------*/
-
-refutable(S):- guardarExpresion(S,R),!,refutar(R).
+/*-------------------------------------REFURTABLE-------------------------*/
 
 
-/* iguales */
-cascaraListasIguales([],[]).
-cascaracListasIguales(X,X).
-cascaraListasIguales([X|_],Y):- listasIguales(X,Y).
 
 
-/* une nos listas sin repetir los elementos */
-unirSinRepeticiones([],C1,C1).
-unirSinRepeticiones([X|Xs],C1,Rta2):- not(pertenece(X,C1)), insertar(X,C1,Rta), unirSinRepeticiones(Xs,Rta,Rta2).
-unirSinRepeticiones([X|Xs],C1,Rta):- pertenece(X,C1), unirSinRepeticiones(Xs,C1,Rta).
 
-/* insertar el elemento E en la lista,si es que E no pertenece a la lista */
-insertar(E,[],[E]).
-insertar(E,Conjunto,[E|Conjunto]):- not(pertenece(E,Conjunto)). 
-insertar(E,Conjunto,Conjunto):- pertenece(E,Conjunto).
-
-/* true si E pertenece a la lista, falso caso contrario */
-pertenece(E,[X|_]):- E=X.
-pertenece(E,[_|Xs]):- pertenece(E,Xs).
 
 
 /*-------------------PROGRAMA PRINCIPAL--------------------------------*/
@@ -359,7 +359,7 @@ fncr(FBF,FNCR):-
     eliminarTops(RTA3,RTA44),
     crearTop(RTA44,RTA4),
     writeln("Fbf guardada en la lista luego de borrar tops "= RTA4),
-	generarBottoms(RTA4,RTA5),    
+    generarBottoms(RTA4,RTA5),
 	writeln("Fbf guardada en la lista luego de generar bottoms "= RTA5),
     eliminarBottoms(RTA5,RTA6),
     writeln("Fbf guardada en la lista luego de borrar bottoms "= RTA6),
