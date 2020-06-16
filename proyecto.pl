@@ -335,8 +335,10 @@ transformarExpresion(A,Rta):-
 
 refutable(S):- guardarExpresion(S,R),!,refutar(R).
 
-
-
+/* iguales */
+cascaraListasIguales([],[]).
+cascaraListasIguales(X,X).
+cascaraListasIguales([X|_],Y):- listasSonIguales(X,Y).
 
 /* une nos listas sin repetir los elementos */
 unirSinRepeticiones([],C1,C1).
