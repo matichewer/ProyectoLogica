@@ -333,6 +333,26 @@ transformarExpresion(A,Rta):-
 /*-------------------------------------REFURTABLE-------------------------*/
 
 
+refutable(S):- guardarExpresion(S,R),!,refutar(R).
+
+
+
+
+/* une nos listas sin repetir los elementos */
+unirSinRepeticiones([],C1,C1).
+unirSinRepeticiones([X|Xs],C1,Rta2):- not(pertenece(X,C1)), insertar(X,C1,Rta), unirSinRepeticiones(Xs,Rta,Rta2).
+unirSinRepeticiones([X|Xs],C1,Rta):- pertenece(X,C1), unirSinRepeticiones(Xs,C1,Rta).
+
+
+/* insertar el elemento E en la lista,si es que E no pertenece a la lista */
+insertar(E,[],[E]).
+insertar(E,Conjunto,[E|Conjunto]):- not(pertenece(E,Conjunto)). 
+insertar(E,Conjunto,Conjunto):- pertenece(E,Conjunto).
+
+
+/* true si E pertenece a la lista, falso caso contrario */
+pertenece(E,[X|_]):- E=X.
+pertenece(E,[_|Xs]):- pertenece(E,Xs).
 
 
 
