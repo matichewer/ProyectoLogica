@@ -295,13 +295,10 @@ borrarComplementario(X,[Y|Ys],Rta):-
     Rta=[Y|Rta1].
 
 
-/* ELIMINAR CLAUSULAS BOTTOM */
-eliminarBottoms(Lista, Rta):-
-    borrarTodas(bottom, Lista, Rta1),
-    crearBottom(Rta1, Rta).
+/* HAY BOTTOM */
 
-crearBottom([], [bottom]).
-crearBottom([X|Xs],[X|Xs]).
+hayBottom(X, [bottom]) :- esta(bottom,X).
+hayBottom(X,X):- not(esta(bottom,X)).
 
 
 /* ELIMINAR CLAUSULAS REPETIDAS */
@@ -383,7 +380,7 @@ fncr(FBF,FNCR):-
     writeln("Fbf guardada en la lista luego de borrar tops "= RTA4),
     generarBottoms(RTA4,RTA5),
 	writeln("Fbf guardada en la lista luego de generar bottoms "= RTA5),
-    eliminarBottoms(RTA5,RTA6),
+    hayBottom(RTA5,RTA6),
     writeln("Fbf guardada en la lista luego de borrar bottoms "= RTA6),
     borrarClausulasRepetidas(RTA6,RTA7),
     writeln("Fbf guardada en la lista luego de borrar clausulas repetidas "= RTA7),
