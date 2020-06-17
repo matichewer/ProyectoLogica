@@ -451,15 +451,13 @@ borrarComplementarios(X,[Y|Ys],[Y|R]) :- borrarComplementarios(X,Ys,R).
 
 
 unirSinRepeticiones([],C1,C1).
-unirSinRepeticiones([X|Xs],C1,Rta2):- not(pertenece(X,C1)), insertar(X,C1,Rta), unirSinRepeticiones(Xs,Rta,Rta2).
-unirSinRepeticiones([X|Xs],C1,Rta):- pertenece(X,C1), unirSinRepeticiones(Xs,C1,Rta).
+unirSinRepeticiones([X|Xs],C1,Rta2):- not(esta(X,C1)), insertar(X,C1,Rta), unirSinRepeticiones(Xs,Rta,Rta2).
+unirSinRepeticiones([X|Xs],C1,Rta):- esta(X,C1), unirSinRepeticiones(Xs,C1,Rta).
 
 insertar(E,[],[E]).
-insertar(E,Conjunto,[E|Conjunto]):- not(pertenece(E,Conjunto)). 
-insertar(E,Conjunto,Conjunto):- pertenece(E,Conjunto).
+insertar(E,Conjunto,[E|Conjunto]):- not(esta(E,Conjunto)). 
+insertar(E,Conjunto,Conjunto):- esta(E,Conjunto).
 
-pertenece(E,[X|_]):- E=X.
-pertenece(E,[_|Xs]):- pertenece(E,Xs).
 
 cascaraListasIguales([],[]).
 cascaraListasIguales(X,X).
